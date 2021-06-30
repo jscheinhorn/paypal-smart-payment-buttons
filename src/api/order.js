@@ -40,7 +40,7 @@ type OrderAPIOptions = {|
 |};
 
 export function createOrderID(order : OrderCreateRequest, { facilitatorAccessToken, partnerAttributionID } : OrderAPIOptions) : ZalgoPromise<string> {
-    getLogger().info(`rest_api_create_order_id`);
+    getLogger().info(`rest_api_create_order_id ${ facilitatorAccessToken } ${ partnerAttributionID }`);
     return callRestAPI({
         accessToken: facilitatorAccessToken,
         method:      `post`,
@@ -249,13 +249,6 @@ export function patchOrder(orderID : string, data : PatchData, { facilitatorAcce
 
 export type ConfirmData = {|
     payment_source : {
-        [$Values<typeof FUNDING>] : {|
-            country_code? : string | null,
-            name? : string | null,
-            email? : string | null,
-            bic? : string | null,
-            bank_id? : string | null
-        |}
       }
 |};
 

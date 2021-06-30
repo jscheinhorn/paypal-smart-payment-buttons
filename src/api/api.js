@@ -26,13 +26,14 @@ export function callRestAPI<D, T>({ accessToken, method, url, data, headers } : 
         [ HEADERS.CONTENT_TYPE ]:  `application/json`,
         ...headers
     };
-
+    console.log({ accessToken, method, url, data, headers, requestHeaders });
     return request({
         method,
         url,
         headers: requestHeaders,
         json:    data
     }).then(({ status, body, headers: responseHeaders }) : T => {
+        console.log('Request response:', { status, body, headers: responseHeaders });
         if (status >= 300) {
             const hasDetails = body.details && body.details.length;
             const issue = (hasDetails && body.details[0].issue) ? body.details[0].issue : 'Generic Error';

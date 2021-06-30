@@ -220,11 +220,11 @@ const graphQL : GraphQL = (req, payload) => {
 const tracking = () => {};
 
 const getAccessToken = () => {
-    return Promise.resolve('XYZ12345');
+    return Promise.resolve('A21_A.AAdnYy3_v0g9yRiq77h-0oSpoDA5WRLG-SDS51GIeqvssQ9uklg9T0apQyQKDhT29LnVw05jSIiwj1WIIclY-mFidXDv3g');
 };
 
 const getMerchantID = () => {
-    return Promise.resolve('XYZ12345');
+    return Promise.resolve('XU2FJE33CDSV2');
 };
 
 const getPersonalizationEnabled = () => true;
