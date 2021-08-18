@@ -103,6 +103,8 @@ type IsFundingSourceVaultableOptions = {|
     disableCard : ?$ReadOnlyArray<$Values<typeof CARD>>
 |};
 
+// (orderID : string, { facilitatorAccessToken, buyerAccessToken, partnerAttributionID, forceRestAPI = false } : OrderAPIOptions)
+
 function isFundingSourceVaultable({ accessToken, fundingSource, clientID, merchantID, buyerCountry, currency, commit, vault, intent, disableFunding, disableCard } : IsFundingSourceVaultableOptions) : ZalgoPromise<boolean> {
     return ZalgoPromise.try(() => {
         if (fundingSource !== FUNDING.PAYPAL) {
@@ -234,6 +236,7 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
         standaloneFundingSource, branded } = props;
     let { button, win, fundingSource, card, isClick, buyerAccessToken = serviceData.buyerAccessToken,
         venmoPayloadID, buyerIntent } = payment;
+    console.log({ serviceData, props, payment, config });
     const { fundingEligibility, buyerCountry, sdkMeta, merchantID } = serviceData;
     const { cspNonce } = config;
 
@@ -326,6 +329,7 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
             },
 
             onApprove: ({ payerID, paymentID, billingToken, subscriptionID, authCode }) => {
+                console.log('*** onApprove ***', { payerID, paymentID, billingToken, subscriptionID, authCode });
                 approved = true;
                 getLogger().info(`spb_onapprove_access_token_${ buyerAccessToken ? 'present' : 'not_present' }`).flush();
 
@@ -358,7 +362,16 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
 
             onClose: () => {
                 checkoutOpen = false;
+                const facilitatorAccessToken = serviceData.facilitatorAccessToken;
+                let orderID;
+                console.log(`*** checkoutOpen ${ checkoutOpen } \n !forceClosed ${ !forceClosed } \n !approved ${ !approved } ***`);
+                console.log({ forceClosed, approved });
+                if (!forceClosed && (payment.fundingSource === 'oxxo' || payment.fundingSource === 'boletobancario')) {
+                    console.log('*** calling onApprove from onClose ***');
+                    return onApprove({ orderID, facilitatorAccessToken }, { restart });
+                }
                 if (!forceClosed && !approved) {
+                    console.log('*** calling onCancel from onClose ***');
                     return onCancel();
                 }
             },
