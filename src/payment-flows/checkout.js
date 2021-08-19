@@ -7,7 +7,7 @@ import { getParent, getTop, type CrossDomainWindowType } from 'cross-domain-util
 
 import type { ProxyWindow, ConnectOptions } from '../types';
 import { type CreateBillingAgreement, type CreateSubscription } from '../props';
-import { enableVault, exchangeAccessTokenForAuthCode, getConnectURL, getFundingEligibility, updateButtonClientConfig, getSmartWallet  } from '../api';
+import { enableVault, exchangeAccessTokenForAuthCode, getConnectURL, getFundingEligibility, updateButtonClientConfig, getSmartWallet, getOrder  } from '../api';
 import { CONTEXT, TARGET_ELEMENT, BUYER_INTENT, FPTI_TRANSITION, FPTI_CONTEXT_TYPE } from '../constants';
 import { unresolvedPromise, getLogger } from '../lib';
 import { openPopup } from '../ui';
@@ -102,8 +102,6 @@ type IsFundingSourceVaultableOptions = {|
     disableFunding : ?$ReadOnlyArray<$Values<typeof FUNDING>>,
     disableCard : ?$ReadOnlyArray<$Values<typeof CARD>>
 |};
-
-// (orderID : string, { facilitatorAccessToken, buyerAccessToken, partnerAttributionID, forceRestAPI = false } : OrderAPIOptions)
 
 function isFundingSourceVaultable({ accessToken, fundingSource, clientID, merchantID, buyerCountry, currency, commit, vault, intent, disableFunding, disableCard } : IsFundingSourceVaultableOptions) : ZalgoPromise<boolean> {
     return ZalgoPromise.try(() => {
@@ -360,10 +358,16 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
                     return onShippingChange({ buyerAccessToken, ...data }, actions);
                 } : null,
 
-            onClose: () => {
+            onClose: async () => {
                 checkoutOpen = false;
                 const facilitatorAccessToken = serviceData.facilitatorAccessToken;
-                let orderID;
+                const buyerAccToken = serviceData.buyerAccessToken;
+                const orderID = await createOrder();
+                console.log({ orderID });
+                console.log({ orderID, facilitatorAccessToken, buyerAccessToken, merchantID });
+                let partnerAttributionID;
+                const order = await getOrder(orderID, { facilitatorAccessToken, buyerAccessToken: buyerAccToken, partnerAttributionID });
+                console.log({ order });
                 console.log(`*** checkoutOpen ${ checkoutOpen } \n !forceClosed ${ !forceClosed } \n !approved ${ !approved } ***`);
                 console.log({ forceClosed, approved });
                 if (!forceClosed && (payment.fundingSource === 'oxxo' || payment.fundingSource === 'boletobancario')) {

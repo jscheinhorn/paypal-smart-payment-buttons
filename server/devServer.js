@@ -220,11 +220,11 @@ const graphQL : GraphQL = (req, payload) => {
 const tracking = () => {};
 
 const getAccessToken = () => {
-    return Promise.resolve('A21_A.AAdnYy3_v0g9yRiq77h-0oSpoDA5WRLG-SDS51GIeqvssQ9uklg9T0apQyQKDhT29LnVw05jSIiwj1WIIclY-mFidXDv3g');
+    return Promise.resolve('A21_A.AAceh8X5l3-mnFQ0fyVpOCNGDbMrO-JrkdQntVkBYl8qGqwlYkxOUhasl2M5TnUjXUcB4lCxUx48OsjKhHHCVBaDY20VGQ');
 };
 
 const getMerchantID = () => {
-    return Promise.resolve('XU2FJE33CDSV2');
+    return Promise.resolve('KL4DY9DN3MZRC');
 };
 
 const getPersonalizationEnabled = () => true;

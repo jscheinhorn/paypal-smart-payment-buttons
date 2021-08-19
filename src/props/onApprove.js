@@ -249,9 +249,9 @@ export function getOnApprove({ intent, onApprove = getDefaultOnApprove(intent), 
                 }).flush();
 
             if (!billingToken && !subscriptionID && !clientAccessToken && !vault) {
-                if (!payerID && branded) {
-                    getLogger().error('onapprove_payerid_not_present_for_branded_standalone_button', { orderID }).flush();
-                }
+                // if (!payerID && branded) {
+                //     getLogger().error('onapprove_payerid_not_present_for_branded_standalone_button', { orderID }).flush();
+                // }
             }
 
             return getSupplementalOrderInfo(orderID).then(supplementalData => {
