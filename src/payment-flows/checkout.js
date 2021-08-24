@@ -355,6 +355,13 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
                 });
             },
 
+            onError: (err) => {
+                // eslint-disable-next-line no-use-before-define
+                return close().then(() => {
+                    return onError(err);
+                });
+            },
+
             onShippingChange: onShippingChange
                 ? (data, actions) => {
                     return onShippingChange({ buyerAccessToken, ...data }, actions);
@@ -368,6 +375,7 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
                 console.log({ forceClosed, approved });
                 if (!forceClosed && (payment.fundingSource === 'oxxo' || payment.fundingSource === 'boletobancario')) {
                     console.log('*** calling onApprove from onClose ***');
+                    // eslint-disable-next-line no-use-before-define
                     return onApprove({ orderID, facilitatorAccessToken }, { restart });
                 }
                 if (!forceClosed && !approved) {
@@ -375,8 +383,6 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
                     return onCancel();
                 }
             },
-
-            onError,
 
             fundingSource,
             card,
