@@ -264,7 +264,21 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
                 }
             },
 
-            onError,
+            onError: (err) => {
+                return createOrder().then(orderID => {
+                    getLogger()
+                        .info('on_error_tracking')
+                        .track({
+                            [FPTI_KEY.TRANSITION]:   FPTI_TRANSITION.CHECKOUT_ERROR,
+                            [FPTI_KEY.CONTEXT_TYPE]: FPTI_CONTEXT_TYPE.ORDER_ID,
+                            [FPTI_KEY.TOKEN]:        orderID,
+                            [FPTI_KEY.CONTEXT_ID]:   orderID,
+                            [FPTI_KEY.ERROR_DESC]:   JSON.stringify(err)
+                        }).flush();
+                    return onError(err);
+                });
+            },
+
             dimensions: getDimensions(fundingSource),
 
             fundingSource,
