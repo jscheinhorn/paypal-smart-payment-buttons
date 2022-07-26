@@ -5,7 +5,7 @@ import { cleanup, memoize, stringifyError, stringifyErrorMessage, noop } from '@
 import { FPTI_KEY, FUNDING } from '@paypal/sdk-constants/src';
 import { ZalgoPromise } from '@krakenjs/zalgo-promise/src';
 
-import {  getApplepayConfig, getDetailedOrderInfo, approveApplePayPayment, getApplePayMerchantSession } from '../../api';
+import {  getApplepayConfig, getDetailedOrderInfo, approveApplePayPayment, getApplePayMerchantSession, loadFraudnet } from '../../api';
 import { getLogger, promiseNoop, unresolvedPromise } from '../../lib';
 import { FPTI_CUSTOM_KEY, FPTI_STATE, FPTI_TRANSITION } from '../../constants';
 import type { ApplePayLineItem, ApplePayPaymentMethod, ApplePayPaymentContact, ApplePayShippingMethod, ApplePayShippingMethodUpdate, ApplePayShippingContactUpdate, PaymentFlow, PaymentFlowInstance, IsEligibleOptions, IsPaymentEligibleOptions, InitOptions, SetupOptions, ApplepaySessionMerchantConfig } from '../types';
@@ -56,7 +56,7 @@ function isApplePayPaymentEligible({ payment } : IsPaymentEligibleOptions) : boo
 }
 
 function initApplePay({ props, payment, serviceData } : InitOptions) : PaymentFlowInstance {
-    const { createOrder, onApprove, onCancel, onError, onClick, onShippingChange, locale, clientID, merchantDomain, currency, applePay, partnerAttributionID, paymentRequest } = props;
+    const { createOrder, onApprove, onCancel, onError, onClick, onShippingChange, locale, clientID, merchantDomain, currency, applePay, partnerAttributionID, paymentRequest, env } = props;
     const { facilitatorAccessToken } = serviceData;
     const { fundingSource } = payment;
 
@@ -347,7 +347,8 @@ function initApplePay({ props, payment, serviceData } : InitOptions) : PaymentFl
                     function validateMerchant({ validationURL } : {| validationURL : string |}) {
                         logApplePayEvent('validatemerchant', { validationURL });
 
-                        orderPromise.then(orderID => {                
+                        orderPromise.then(orderID => {   
+                            loadFraudnet({ env, clientMetadataID: orderID }).catch(noop);        
                             getDetailedOrderInfo(orderID, locale.country).then(order => {
                                 const {
                                     merchant,
