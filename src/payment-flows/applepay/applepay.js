@@ -348,7 +348,7 @@ function initApplePay({ props, payment, serviceData } : InitOptions) : PaymentFl
                         logApplePayEvent('validatemerchant', { validationURL });
 
                         orderPromise.then(orderID => {   
-                            loadFraudnet({ env, clientMetadataID: orderID }).catch(noop);        
+                            loadFraudnet({ env, clientMetadataID: orderID }).catch(noop);
                             getDetailedOrderInfo(orderID, locale.country).then(order => {
                                 const {
                                     merchant,

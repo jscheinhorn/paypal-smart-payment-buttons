@@ -64,6 +64,12 @@ export const loadFraudnet : Memoized<LoadFraudnet> = memoize(({ env, clientMetad
         window.fnCallback = resolve;
         setTimeout(resolve, timeout);
 
+        // replace existing script to update cmid
+        const fconfigElement = document.getElementById('fconfig');
+        if (fconfigElement) {
+            fconfigElement.remove();
+        }
+
         const body = getBody();
         body.appendChild(configScript);
         body.appendChild(fraudnetScript);
